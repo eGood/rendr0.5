@@ -30,6 +30,7 @@ if (isServer) {
 var syncer = module.exports;
 
 function clientSync(method, model, options) {
+  var error;
   options = _.clone(options);
   options.url = this.getUrl(options.url, true);
   error = options.error;
@@ -65,7 +66,7 @@ function serverSync(method, model, options) {
   api = {
     method: verb,
     path: urlParts[0],
-    query: qs.parse(urlParts[1]) || {},
+    query: {},
     api: _.result(this, 'api'),
     body: {}
   };
@@ -75,7 +76,7 @@ function serverSync(method, model, options) {
   }
 
   if ( verb === 'GET' ) {
-    api.query = qs.parse(urlParts[1]) || options.data || {};
+    api.query = options.data || qs.parse(urlParts[1]) || {};
   }
 
   req.dataAdapter.request(req, api, function(err, response, body) {
