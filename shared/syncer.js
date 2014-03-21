@@ -30,7 +30,6 @@ if (isServer) {
 var syncer = module.exports;
 
 function clientSync(method, model, options) {
-  var error;
   options = _.clone(options);
   options.url = this.getUrl(options.url, true);
   error = options.error;
@@ -72,7 +71,11 @@ function serverSync(method, model, options) {
   };
 
   if (verb === 'POST' || verb === 'PUT') {
-    api.body = model.toJSON();
+    api.body = options.parseData ? options.data : model.toJSON();
+  }
+
+  if ( verb === 'GET' ) {
+    api.query = qs.parse(urlParts[1]) || options.data || {};
   }
 
   req.dataAdapter.request(req, api, function(err, response, body) {
